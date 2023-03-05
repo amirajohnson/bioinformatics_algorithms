@@ -1,0 +1,75 @@
+#import packages we might need
+from pprint import pprint
+
+with open("tests/clump_inputs/input_4.txt", "r") as file:
+    input = file.read()
+
+input = input.splitlines()
+genome = input[0]
+
+parameters = input[1].split(' ')
+k = int(parameters[0])
+L = int(parameters[1])
+t = int(parameters[2])
+
+print(k, L, t)
+
+#the problem is in here!
+def create_frequency_table(genome, k):
+    #crate an empty table, a list for the kmers, and place to hold our seen vals
+    table = dict()
+    kmers = []
+    seen = set()
+
+    #make a list of every kmer in the genome.
+    i = 0;
+    while(i+k<=len(genome)):
+        kmer = genome[i:i+k]
+        kmers.append(kmer);
+        i+=1
+    #fill in the frequency table:
+    for kmer in kmers:
+        if kmer not in seen:
+            table[kmer] = 1
+        else:
+            table[kmer]+=1
+        seen.add(kmer)
+    return table
+
+
+def remove_duplicates(L):
+    seen = set()
+    newL = []
+    for val in L:
+        if val not in seen:
+            newL.append(val)
+            seen.add(val)
+    return newL
+
+#its only running the pattern on the last frequency table
+def find_clumps(genome, k,l, t):
+    #initialize some important values
+    patterns = []
+    n = len(genome)
+
+    for i in range(n-l):
+        window = genome[i:i+l] #l is the length of the window
+        frequency_map = create_frequency_table(window, k)
+        for key in frequency_map:
+            if frequency_map[key]>=t:
+                patterns.append(key)
+                #print(key)
+    patterns = remove_duplicates(patterns)
+    
+    result_string = ''
+    for val in patterns:
+        result_string+= val+' '
+
+    result_string = result_string.strip()
+    return result_string
+
+result = find_clumps(genome, k, L, t)
+with open("tests/clump_outputs/my_output.txt", "w") as file:
+    file.write(str(result))
+
+

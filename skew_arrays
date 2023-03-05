@@ -1,0 +1,47 @@
+with open("tests/MinimumSkew/inputs/dataset_876090_2.txt", "r") as file:
+    input = file.read()
+
+def get_minimum_skew(genome):
+    sum = 0
+    best_min = sum
+    recent = ''
+    min_indx = []
+    i = 0
+    best_index = None
+
+    #get all of the places where a minimum occurs. find the actual minimums
+    if 'G' not in genome and 'C' in genome:
+        return genome.rfind('C')+1
+    elif 'C' not in genome and 'G' in genome:
+        return 0
+    else:
+        while(i<len(genome)):
+            if genome[i] == 'G':
+                if recent == 'C':
+                    min_indx.append((sum, i))
+                sum+=1
+            if genome[i] == 'C':
+                sum-=1
+            recent = genome[i]
+            i+=1
+
+    best_indexes = []
+    for val, index in min_indx:
+        if val <= best_min:
+            best_min = val
+
+    for val, index in min_indx:
+        if val == best_min:
+            best_indexes.append(index)
+
+    res = ''
+    for item in best_indexes:
+        res+= str(item) + ' '
+    res = res.strip()
+    return res
+
+result = get_minimum_skew(input)
+with open("tests/MinimumSkew/outputs/my_output.txt", "w") as file:
+    file.write(str(result))
+
+
